@@ -1,10 +1,30 @@
 import React, {useState} from 'react';
 import ReactDOM from 'react-dom';
-class Hole extends React.Component{
+class Hole extends React.Component
+{
   render()
   {
     return (
-      <button onClick={this.props.onClick}>
+      <button id={this.props.id} onClick={this.props.onClick}>
+        {this.props.owner}
+      </button>
+    );
+  }
+}
+
+class Row extends React.Component
+{
+  constructor(props){
+    super(props);
+
+    this.state = {
+      row: new Array(7).fill('Empty')
+    }
+  }
+  render()
+  {
+    return (
+      <button id={this.props.id} onClick={this.props.onClick}>
         {this.props.owner}
       </button>
     );
@@ -27,15 +47,21 @@ class GameBoard extends React.Component
   renderHole(posX, posY)
   {
     return (
-      <Hole /*ID HERE*/ owner={this.state.board[posY][posX]} onClick={() => 
+      <Hole owner={this.state.board[posY][posX]} onClick={() => 
                                            {
-                                             if( this.state.board[posX][posY] === 'Empty') {
-                                                let newVal = this.state.board;
-                                                console.log(this.state.board);
-                                                console.log(this.state.board[0]);
-                                                console.log(this.state.board[0][0]);
-                                                (newVal[posY])[posX] = this.state.playersTurn;
-                                                this.setState({'board': newVal});
+                                             if( this.state.board[posY][posX] === 'Empty') {
+                                                //let newVal = new Array(6).fill(new Array(7));
+                                                let newVal = this.state.board.slice();
+                                                newVal[posY][posX] = String(this.state.playersTurn);
+
+                                                this.setState({
+                                                  playersTurn: (this.state.playersTurn === 'Red') ? 'Yellow' : 'Red',
+                                                  board: newVal
+                                                });
+
+                                                console.log(newVal);
+                                                console.log(newVal[posY]);
+                                                console.log(newVal[posY][posX]);
                                               }
                                             }
                                         }/>
@@ -54,8 +80,9 @@ class GameBoard extends React.Component
         {this.renderHole(5, posY)}
         {this.renderHole(6, posY)}
       </div>
-    )
+    );
   }
+
   render() 
   {
     return (
