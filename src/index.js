@@ -1,18 +1,17 @@
 import React, {useState} from 'react';
 import ReactDOM from 'react-dom';
-class Hole extends React.Component
+
+function Hole(props)
 {
-  render()
-  {
-    return (
-      <button id={this.props.id} onClick={this.props.onClick}>
-        {this.props.owner}
-      </button>
-    );
-  }
+  return (
+    <button id={props.id} onClick={props.onClick}>
+      {props.owner}
+    </button>
+  );
 }
 
-class Row extends React.Component
+
+/* class Row extends React.Component
 {
   constructor(props){
     super(props);
@@ -21,15 +20,19 @@ class Row extends React.Component
       row: new Array(7).fill('Empty')
     }
   }
+
+  renderHole(posX){}
   render()
   {
     return (
-      <button id={this.props.id} onClick={this.props.onClick}>
-        {this.props.owner}
-      </button>
+      <div id={this.props.id} onClick={this.props.onClick}>
+        <Hole />
+      </div>
     );
   }
 }
+ */
+
 class GameBoard extends React.Component
 {
   constructor(props)
@@ -47,38 +50,39 @@ class GameBoard extends React.Component
   renderHole(posX, posY)
   {
     return (
-      <Hole owner={this.state.board[posY][posX]} onClick={() => 
+      <Hole id={'X' + posX + 'Y' + posY} owner={this.state.board[posY][posX]} onClick={() => 
                                            {
-                                             if( this.state.board[posY][posX] === 'Empty') {
-                                                //let newVal = new Array(6).fill(new Array(7));
-                                                let newVal = this.state.board.slice();
-                                                newVal[posY][posX] = String(this.state.playersTurn);
+                                             if(this.state.board[posY][posX] === 'Empty') {
+                                                const newBoard = this.state.board.map((arr) => {
+                                                  return arr.slice();
+                                                });
+
+                                                let newVal = newBoard[posY];
+
+                                                newVal[posX] = this.state.playersTurn;
+                                                
 
                                                 this.setState({
                                                   playersTurn: (this.state.playersTurn === 'Red') ? 'Yellow' : 'Red',
-                                                  board: newVal
+                                                  board: newBoard
                                                 });
-
-                                                console.log(newVal);
-                                                console.log(newVal[posY]);
-                                                console.log(newVal[posY][posX]);
                                               }
                                             }
                                         }/>
     );
   }
 
-  renderRow(posY)
+  renderRow(ySpot)
   {
     return (
       <div>
-        {this.renderHole(0, posY)}
-        {this.renderHole(1, posY)}
-        {this.renderHole(2, posY)}
-        {this.renderHole(3, posY)}
-        {this.renderHole(4, posY)}
-        {this.renderHole(5, posY)}
-        {this.renderHole(6, posY)}
+        {this.renderHole(0, ySpot)}
+        {this.renderHole(1, ySpot)}
+        {this.renderHole(2, ySpot)}
+        {this.renderHole(3, ySpot)}
+        {this.renderHole(4, ySpot)}
+        {this.renderHole(5, ySpot)}
+        {this.renderHole(6, ySpot)}
       </div>
     );
   }
@@ -88,21 +92,19 @@ class GameBoard extends React.Component
     return (
       <div>
         <div>{this.state.playersTurn} Players Turn</div>
-        {this.renderRow(5)}
-        {this.renderRow(4)}
-        {this.renderRow(3)}
-        {this.renderRow(2)}
-        {this.renderRow(1)}
         {this.renderRow(0)}
+        {this.renderRow(1)}
+        {this.renderRow(2)}
+        {this.renderRow(3)}
+        {this.renderRow(4)}
+        {this.renderRow(5)}
       </div>
     );
   }
 }
 
 ReactDOM.render(
-  <div>
-    <GameBoard />
-  </div>
+  <GameBoard />
   ,
   document.getElementById('root')
 );
