@@ -4,34 +4,11 @@ import ReactDOM from 'react-dom';
 function Hole(props)
 {
   return (
-    <button id={props.id} onClick={props.onClick}>
+    <button id={props.id} onClick={props.onClick} >
       {props.owner}
     </button>
   );
 }
-
-
-/* class Row extends React.Component
-{
-  constructor(props){
-    super(props);
-
-    this.state = {
-      row: new Array(7).fill('Empty')
-    }
-  }
-
-  renderHole(posX){}
-  render()
-  {
-    return (
-      <div id={this.props.id} onClick={this.props.onClick}>
-        <Hole />
-      </div>
-    );
-  }
-}
- */
 
 class GameBoard extends React.Component
 {
@@ -40,7 +17,7 @@ class GameBoard extends React.Component
     super(props);
 
     this.state = {
-      board: new Array(6).fill(new Array(7).fill('Empty')),
+      gameBoard: new Array(6).fill(new Array(7).fill('Empty')),
       winner: '',
       playersTurn: 'Red',
 
@@ -50,10 +27,10 @@ class GameBoard extends React.Component
   renderHole(posX, posY)
   {
     return (
-      <Hole id={'X' + posX + 'Y' + posY} owner={this.state.board[posY][posX]} onClick={() => 
+      <Hole id={'X' + posX + 'Y' + posY} owner={this.state.gameBoard[posY][posX]} onClick={() => 
                                            {
-                                             if(this.state.board[posY][posX] === 'Empty') {
-                                                const newBoard = this.state.board.map((arr) => {
+                                             if(this.state.gameBoard[posY][posX] === 'Empty') {
+                                                const newBoard = this.state.gameBoard.map((arr) => {
                                                   return arr.slice();
                                                 });
 
@@ -64,7 +41,7 @@ class GameBoard extends React.Component
 
                                                 this.setState({
                                                   playersTurn: (this.state.playersTurn === 'Red') ? 'Yellow' : 'Red',
-                                                  board: newBoard
+                                                  gameBoard: newBoard
                                                 });
                                               }
                                             }
@@ -72,17 +49,17 @@ class GameBoard extends React.Component
     );
   }
 
-  renderRow(ySpot)
+  renderRow(posY)
   {
     return (
       <div>
-        {this.renderHole(0, ySpot)}
-        {this.renderHole(1, ySpot)}
-        {this.renderHole(2, ySpot)}
-        {this.renderHole(3, ySpot)}
-        {this.renderHole(4, ySpot)}
-        {this.renderHole(5, ySpot)}
-        {this.renderHole(6, ySpot)}
+        {this.renderHole(0, posY)}
+        {this.renderHole(1, posY)}
+        {this.renderHole(2, posY)}
+        {this.renderHole(3, posY)}
+        {this.renderHole(4, posY)}
+        {this.renderHole(5, posY)}
+        {this.renderHole(6, posY)}
       </div>
     );
   }
@@ -101,6 +78,50 @@ class GameBoard extends React.Component
       </div>
     );
   }
+
+  componentDidUpdate()
+  {
+    if(checkWinner(this.state.gameBoard))
+    {
+      let win = (this.state.playersTurn === 'Red') ? 'Yellow' : 'Red';
+    }
+  }
+}
+
+function checkFour(a, b, c, d)
+{
+  return (
+          (a !== 'Empty' && b !== 'Empty' && c !== 'Empty' && d !== 'Empty') 
+          && 
+          (a === b && b === c && c === d)
+    );
+}
+
+function checkWinner(b)
+{
+  for (var j = 0; j < 6; j++)
+  {
+    for(var i = 0; i < 4; i++) 
+    {
+      if (checkFour(b[j][0 + i], b[j][1 + i], b[j][2 + i], b[j][3 + i]))
+      {
+        return true;
+      }
+    }
+  }
+
+  for (var j = 0; j < 7; j++)
+  {
+    for(var i = 0; i < 3; i++) 
+    {
+      if (checkFour(b[0 + i][j], b[1 + i][j], b[2 + i][j], b[3 + i][j]))
+      {
+        return true;
+      }
+    }
+  }
+
+  return false;
 }
 
 ReactDOM.render(
