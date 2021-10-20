@@ -231,8 +231,7 @@ ReactDOM.render(
   <div style={pageStyle}>
     <GameBoard />
     <ResetBtn />
-  </div>
-  ,
+  </div>,
   document.getElementById('root')
 );
 
