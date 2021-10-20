@@ -31,6 +31,23 @@ function ResetBtn(){
   );
 }
 
+function TurnMessage(props) {
+
+  let message;
+
+  if (props.win !== '') {
+    message = "Player Wins!";
+  } else {
+    message = "Players Turn";
+  }
+
+  return (
+    <div>
+      {message}
+    </div>
+  );
+}
+
 function Hole(props)
 {
   const holesStyle = {
@@ -68,7 +85,7 @@ class GameBoard extends React.Component
       //Edit onclick to be better aligned
       <Hole  id={holeId} owner={this.state.gameBoard[posY][posX]} onClick={() => 
                                            {
-                                              if(this.state.gameBoard[posY][posX] === 'white') {
+                                              if(this.state.gameBoard[posY][posX] === 'white' && this.state.winner === '') {
                                                 const newBoard = this.state.gameBoard.map((arr) => {
                                                   return arr.slice();
                                                 });
@@ -81,7 +98,8 @@ class GameBoard extends React.Component
                                                 this.setState({
                                                   playersTurn: (this.state.playersTurn === 'red') ? 'yellow' : 'red',
                                                   gameBoard: newBoard,
-                                                  count: (this.state.count + 1)
+                                                  count: (this.state.count + 1),
+                                                  winner: checkWinner(newBoard)
                                                 });
                                               } 
                                             }
@@ -110,9 +128,7 @@ class GameBoard extends React.Component
       <div style={boardStyle}>
         <div style={{display: 'flex', alignItems: 'center'}}>
           <Hole owner={this.state.playersTurn} id={"displayDot"} /> 
-          <div>
-            Players Turn
-          </div>
+          <TurnMessage win={this.state.winner} />
         </div>
         <div style={{backgroundColor: 'blue', borderRadius: '5px', width: '420px'}}>
           {this.renderRow(0)}
@@ -128,6 +144,7 @@ class GameBoard extends React.Component
 
   componentDidUpdate()
   {
+    //Move around parts so not in did update
     let win = checkWinner(this.state.gameBoard);
     console.log(win);  
 
