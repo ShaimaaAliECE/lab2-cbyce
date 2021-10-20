@@ -2,23 +2,41 @@ import React from 'react';
 import ReactDOM from 'react-dom';
 import './index.css';
 
+/*----- Styling for the game -----*/
+// Board and Display styling
 const boardStyle = {
   display: 'flex',
-  alignItems: 'center', 
-  justifyContent: 'space-evenly', 
   flexDirection: 'column',
-  height: '55%'
+  alignItems: 'center', 
+  justifyContent: 'space-between', 
+  height: '485px'
 }
 
+// Whole pages styling
 const pageStyle = {
   display: 'flex',
+  flexDirection: 'column',
   alignItems: 'center', 
   justifyContent: 'space-evenly', 
-  flexDirection: 'column',
-  height: '100vh'
+  minWidth: '475px',
+  minHeight: '515px',
+  height: '100vh',
+  backgroundColor: 'antiquewhite'
 }
 
-//Should I just move this to the bottom code or leep it here
+// Message display styling 
+const messageStyle = {
+  display: 'flex', 
+  alignItems: 'center', 
+  justifyContent: 'center',
+  padding: '5px 10px', 
+  width: '175px', 
+  backgroundColor: 'white', 
+  border: '2px solid black', 
+  borderRadius: '35px' 
+};
+
+//Should I just move this to the bottom code or leep it here *****************************
 function ResetBtn(){
   return (
     <button id={"resetBtn"} onClick={() => 
@@ -31,26 +49,40 @@ function ResetBtn(){
   );
 }
 
+// User message displayed for turn and winner
 function TurnMessage(props) {
-
-  let message;
+  let message, player;
 
   if (props.win !== '') {
+    //If there is a winner
     message = "Player Wins!";
+    player = (props.owner === 'red') ? 'yellow' : 'red'; //Opposite of whos turn it is because last turn won
+  } else if (props.count === 42) {
+    //Board filled without a winner
+    message = "Tie Game";
+    player = 'orange';
   } else {
+    // Displays the next players turn
     message = "Players Turn";
+    player = props.owner;
   }
 
   return (
-    <div>
-      {message}
+    <div style={messageStyle}>
+      {/* Displays chekcker instead of color name */}
+      <Hole owner={player} id={"displayDot"} /> 
+      <div>
+        {message}
+      </div>
     </div>
   );
 }
 
+// Hole button on the board
 function Hole(props)
 {
-  const holesStyle = {
+  // Owner of spot determines color
+  let holesStyle = {
     backgroundColor: props.owner,
     height: '50px',
     width: '50px',
@@ -59,7 +91,7 @@ function Hole(props)
   };
   
   return (
-    <button style={holesStyle} id={props.id} onClick={props.onClick} ></button>
+    <button style={holesStyle} id={props.id} onClick={props.onClick} disabled={props.disabled}></button>
   );
 }
 
@@ -70,43 +102,52 @@ class GameBoard extends React.Component
     super(props);
 
     this.state = {
-      gameBoard: new Array(6).fill(new Array(7).fill('white')),
-      winner: '',
-      count: 0,
-      playersTurn: 'red', //Game starts with red player 
-
+      gameBoard: new Array(6).fill(new Array(7).fill('white')), // Multi dimensional array for the board
+      winner: '', // Winner of the match
+      count: 0, // Number of turns played 
+      playersTurn: 'red' // The player who is about to place a checker (Game starts with red player) 
     }
   }
 
+  // Renders the holes on the board 
   renderHole(posX, posY)
   {
+    // Unique id for each hole
     let holeId = 'X' + posX + 'Y' + posY;
+
     return (
-      //Edit onclick to be better aligned
-      <Hole  id={holeId} owner={this.state.gameBoard[posY][posX]} onClick={() => 
-                                           {
-                                              if(this.state.gameBoard[posY][posX] === 'white' && this.state.winner === '') {
-                                                const newBoard = this.state.gameBoard.map((arr) => {
-                                                  return arr.slice();
-                                                });
+      //Edit onclick to be better aligned ********************************
+      // Owner is determined by color in the board multi dimensional array
+      // Disables the button if owned by a color or winner already determined
+      <Hole id={holeId} 
+            owner={this.state.gameBoard[posY][posX]} 
+            disabled={(this.state.gameBoard[posY][posX] !== 'white' || this.state.winner !== '')}
+            onClick={() => 
+              {
+                // Copy of the current board
+                const newBoard = this.state.gameBoard.map((arr) => {
+                  return arr.slice();
+                });
 
-                                                let newVal = newBoard[posY];
+                // Copy of the row the player clicked
+                let newVal = newBoard[posY];
 
-                                                newVal[posX] = this.state.playersTurn;
-                                              
+                // Updates the white spot to the current players color
+                newVal[posX] = this.state.playersTurn;
+              
 
-                                                this.setState({
-                                                  playersTurn: (this.state.playersTurn === 'red') ? 'yellow' : 'red',
-                                                  gameBoard: newBoard,
-                                                  count: (this.state.count + 1),
-                                                  winner: checkWinner(newBoard)
-                                                });
-                                              } 
-                                            }
-                                        }/>
+                this.setState({
+                  playersTurn: (this.state.playersTurn === 'red') ? 'yellow' : 'red', // Sets the turn to the other player
+                  gameBoard: newBoard, // Updates the game board with the players move
+                  count: (this.state.count + 1), // Increases turn count
+                  winner: checkWinner(newBoard) // Checks to see if there is a winner (If no winner, sets to '')
+                });
+              }
+          }/>
     );
   }
 
+  // Creates a row of 7 holes at the y position
   renderRow(posY)
   {
     return (
@@ -124,13 +165,11 @@ class GameBoard extends React.Component
 
   render() 
   {
+    // Renders rows of gameboard and renders the turn message
     return (
       <div style={boardStyle}>
-        <div style={{display: 'flex', alignItems: 'center'}}>
-          <Hole owner={this.state.playersTurn} id={"displayDot"} /> 
-          <TurnMessage win={this.state.winner} />
-        </div>
-        <div style={{backgroundColor: 'blue', borderRadius: '5px', width: '420px'}}>
+        <TurnMessage win={this.state.winner} count={this.state.count} owner={this.state.playersTurn} />
+        <div style={{backgroundColor: 'blue', borderRadius: '25px', width: '420px', padding: '15px'}}>
           {this.renderRow(0)}
           {this.renderRow(1)}
           {this.renderRow(2)}
@@ -141,16 +180,9 @@ class GameBoard extends React.Component
       </div>
     );
   }
-
-  componentDidUpdate()
-  {
-    //Move around parts so not in did update
-    let win = checkWinner(this.state.gameBoard);
-    console.log(win);  
-
-  }
 }
 
+// Checks if four holes are connected and if they are a players color
 function checkFour(a, b, c, d)
 {
   return (
@@ -160,10 +192,13 @@ function checkFour(a, b, c, d)
     );
 }
 
+// Checks each row and column of the board for a winner, returns winning colour
 function checkWinner(b)
 {
+  // For each row
   for (var j = 0; j < 6; j++)
   {
+    // For each possible position in column 
     for(var i = 0; i < 4; i++) 
     {
       if (checkFour(b[j][0 + i], b[j][1 + i], b[j][2 + i], b[j][3 + i]))
@@ -173,8 +208,10 @@ function checkWinner(b)
     }
   }
 
+  // For each column
   for (var j = 0; j < 7; j++)
   {
+    // For each possible possition in a row
     for(var i = 0; i < 3; i++) 
     {
       if (checkFour(b[0 + i][j], b[1 + i][j], b[2 + i][j], b[3 + i][j]))
@@ -184,6 +221,7 @@ function checkWinner(b)
     }
   }
 
+  // Return empty string if there isnt a winner
   return '';
 }
 
