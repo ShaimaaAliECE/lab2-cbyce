@@ -3,11 +3,12 @@ import ReactDOM from 'react-dom';
 import './index.css';
 
 const boardStyle = {
-  backgroundColor: 'blue',
-  borderRadius: '5px',
-  width: '420px', //Must maintain hole size below
-
-};
+  display: 'flex',
+  alignItems: 'center', 
+  justifyContent: 'space-evenly', 
+  flexDirection: 'column',
+  height: '55%'
+}
 
 const pageStyle = {
   display: 'flex',
@@ -17,6 +18,18 @@ const pageStyle = {
   height: '100vh'
 }
 
+//Should I just move this to the bottom code or leep it here
+function ResetBtn(){
+  return (
+    <button id={"resetBtn"} onClick={() => 
+                      {
+                        window.location.reload(false);
+                      }
+                    }>
+      Click To Restart
+    </button>
+  );
+}
 
 function Hole(props)
 {
@@ -29,9 +42,7 @@ function Hole(props)
   };
   
   return (
-    <button style={holesStyle} id={props.id} onClick={props.onClick} >
-      {props.owner}
-    </button>
+    <button style={holesStyle} id={props.id} onClick={props.onClick} ></button>
   );
 }
 
@@ -52,11 +63,12 @@ class GameBoard extends React.Component
 
   renderHole(posX, posY)
   {
+    let holeId = 'X' + posX + 'Y' + posY;
     return (
-      <Hole  id={'X' + posX + 'Y' + posY} owner={this.state.gameBoard[posY][posX]} onClick={() => 
+      //Edit onclick to be better aligned
+      <Hole  id={holeId} owner={this.state.gameBoard[posY][posX]} onClick={() => 
                                            {
                                               if(this.state.gameBoard[posY][posX] === 'white') {
-                                                console.log(this.state.count);
                                                 const newBoard = this.state.gameBoard.map((arr) => {
                                                   return arr.slice();
                                                 });
@@ -95,9 +107,14 @@ class GameBoard extends React.Component
   render() 
   {
     return (
-      <div style={pageStyle}>
-        <div>{this.state.playersTurn} Players Turn</div>
-        <div style={boardStyle}>
+      <div style={boardStyle}>
+        <div style={{display: 'flex', alignItems: 'center'}}>
+          <Hole owner={this.state.playersTurn} id={"displayDot"} /> 
+          <div>
+            Players Turn
+          </div>
+        </div>
+        <div style={{backgroundColor: 'blue', borderRadius: '5px', width: '420px'}}>
           {this.renderRow(0)}
           {this.renderRow(1)}
           {this.renderRow(2)}
@@ -113,6 +130,7 @@ class GameBoard extends React.Component
   {
     let win = checkWinner(this.state.gameBoard);
     console.log(win);  
+
   }
 }
 
@@ -153,7 +171,10 @@ function checkWinner(b)
 }
 
 ReactDOM.render(
-  <GameBoard />
+  <div style={pageStyle}>
+    <GameBoard />
+    <ResetBtn />
+  </div>
   ,
   document.getElementById('root')
 );
