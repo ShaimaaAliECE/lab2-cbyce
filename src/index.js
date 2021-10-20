@@ -36,11 +36,13 @@ const messageStyle = {
   borderRadius: '35px' 
 };
 
-//Should I just move this to the bottom code or leep it here *****************************
+/*----- Buttons and Display -----*/
+// Reset button to restart game
 function ResetBtn(){
   return (
     <button id={"resetBtn"} onClick={() => 
                       {
+                        // Reloads the window when clicked
                         window.location.reload(false);
                       }
                     }>
@@ -95,6 +97,7 @@ function Hole(props)
   );
 }
 
+/*----- Game board & Page display -----*/
 class GameBoard extends React.Component
 {
   constructor(props)
@@ -116,7 +119,6 @@ class GameBoard extends React.Component
     let holeId = 'X' + posX + 'Y' + posY;
 
     return (
-      //Edit onclick to be better aligned ********************************
       // Owner is determined by color in the board multi dimensional array
       // Disables the button if owned by a color or winner already determined
       <Hole id={holeId} 
