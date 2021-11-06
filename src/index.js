@@ -54,11 +54,11 @@ function TurnMessage(props) {
   let message, player;
 
   if (props.win !== '') {
-    //If there is a winner
+    // If there is a winner
     message = "Player Wins!";
     player = (props.owner === 'red') ? 'yellow' : 'red'; //Opposite of whos turn it is because last turn won
   } else if (props.count === 42) {
-    //Board filled without a winner
+    // Board filled without a winner
     message = "Tie Game";
     player = 'orange';
   } else {
