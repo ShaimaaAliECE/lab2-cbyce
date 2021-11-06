@@ -36,7 +36,7 @@ const messageStyle = {
   borderRadius: '35px' 
 };
 
-//Should I just move this to the bottom code or leep it here *****************************
+// Button to refresh page and thus restart game
 function ResetBtn(){
   return (
     <button id={"resetBtn"} onClick={() => 
@@ -69,7 +69,6 @@ function TurnMessage(props) {
 
   return (
     <div style={messageStyle}>
-      {/* Displays chekcker instead of color name */}
       <Hole owner={player} id={"displayDot"} /> 
       <div>
         {message}
@@ -116,7 +115,6 @@ class GameBoard extends React.Component
     let holeId = 'X' + posX + 'Y' + posY;
 
     return (
-      //Edit onclick to be better aligned ********************************
       // Owner is determined by color in the board multi dimensional array
       // Disables the button if owned by a color or winner already determined
       <Hole id={holeId} 
